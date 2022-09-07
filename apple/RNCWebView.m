@@ -1175,7 +1175,8 @@ RCTAutoInsetsProtocol>
     [event addEntriesFromDictionary: @{
       @"url": (request.URL).absoluteString,
       @"navigationType": navigationTypes[@(navigationType)],
-      @"isTopFrame": @(isTopFrame)
+      @"isTopFrame": @(isTopFrame),
+      @"hasTargetFrame": @(hasTargetFrame),
     }];
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
