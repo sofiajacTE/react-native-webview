@@ -948,7 +948,6 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
       if (!request.getRequestHeaders().get("User-Agent").startsWith("teamengine")) {
-          System.out.println("User agent reverted");
           userAgentBroken = true;
       }
       return null;
