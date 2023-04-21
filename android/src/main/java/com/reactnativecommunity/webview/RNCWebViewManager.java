@@ -247,7 +247,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         }
 
         //Finish setting up request
-        request.addRequestHeader("User-Agent", userAgent);
+        request.addRequestHeader("User-Agent", "teamengine-app-android/1.0 Chrome/104");
         request.setTitle(fileName);
         request.setDescription(downloadMessage);
         request.allowScanningByMediaScanner();
