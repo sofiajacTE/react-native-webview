@@ -163,7 +163,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   protected boolean mAllowsFullscreenVideo = false;
   protected boolean mHasOnOpenWindowEvent = false;
   protected boolean mAllowsProtectedMedia = false;
-  protected @Nullable String mUserAgent = null;
+  protected @Nullable String mUserAgent = "teamengine-app-android/1.0 Chrome/104";
   protected @Nullable String mUserAgentWithApplicationName = null;
   protected @Nullable String mDownloadingMessage = null;
   protected @Nullable String mLackPermissionToDownloadMessage = null;
@@ -442,14 +442,15 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   }
 
   protected void setUserAgentString(WebView view) {
-    if(mUserAgent != null) {
-      view.getSettings().setUserAgentString(mUserAgent);
-    } else if(mUserAgentWithApplicationName != null) {
-      view.getSettings().setUserAgentString(mUserAgentWithApplicationName);
-    } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      // handle unsets of `userAgent` prop as long as device is >= API 17
-      view.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(view.getContext()));
-    }
+    view.getSettings().setUserAgentString("teamengine-app-android/1.0 Chrome/104");
+    // if(mUserAgent != null) {
+    //   view.getSettings().setUserAgentString(mUserAgent);
+    // } else if(mUserAgentWithApplicationName != null) {
+    //   view.getSettings().setUserAgentString(mUserAgentWithApplicationName);
+    // } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    //   // handle unsets of `userAgent` prop as long as device is >= API 17
+    //   view.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(view.getContext()));
+    // }
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -575,7 +576,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
             String key = iter.nextKey();
             if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
               if (view.getSettings() != null) {
-                view.getSettings().setUserAgentString(headers.getString(key));
+                view.getSettings().setUserAgentString("teamengine-app-android/1.0 Chrome/104");
               }
             } else {
               headerMap.put(key, headers.getString(key));
@@ -928,6 +929,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     protected RNCWebView.ProgressChangedFilter progressChangedFilter = null;
     protected @Nullable String ignoreErrFailedForThisURL = null;
     protected @Nullable BasicAuthCredential basicAuthCredential = null;
+    boolean userAgentBroken = false;
 
     public void setIgnoreErrFailedForThisURL(@Nullable String url) {
       ignoreErrFailedForThisURL = url;
@@ -955,6 +957,11 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       super.onPageStarted(webView, url, favicon);
       mLastLoadFailed = false;
 
+      if (userAgentBroken) {
+        webView.getSettings().setUserAgentString("teamengine-app-android/1.1 Chrome/104");
+        userAgentBroken = false;
+      }
+
       RNCWebView reactWebView = (RNCWebView) webView;
       reactWebView.callInjectedJavaScriptBeforeContentLoaded();
 
@@ -963,6 +970,14 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         new TopLoadingStartEvent(
           webView.getId(),
           createWebViewEvent(webView, url)));
+    }
+
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+      if (!request.getRequestHeaders().get("User-Agent").startsWith("teamengine")) {
+          userAgentBroken = true;
+      }
+      return null;
     }
 
     @Override
@@ -1308,6 +1323,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       if (progressChangedFilter.isWaitingForCommandLoadUrl()) {
         return;
       }
+      webView.getSettings().setUserAgentString("teamengine-app-android/1.0 Chrome/104");
       WritableMap event = Arguments.createMap();
       event.putDouble("target", webView.getId());
       event.putString("title", webView.getTitle());
