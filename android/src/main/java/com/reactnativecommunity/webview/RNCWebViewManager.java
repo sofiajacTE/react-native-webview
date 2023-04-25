@@ -576,6 +576,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
             String key = iter.nextKey();
             if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
               if (view.getSettings() != null) {
+                // HEJ
                 view.getSettings().setUserAgentString("teamengine-app-android/1.0 Chrome/104");
               }
             } else {
